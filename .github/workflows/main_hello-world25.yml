@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Deploy static files to Azure Web App - hello-world25
 
 on:
@@ -9,14 +12,25 @@ on:
 jobs:
   deploy:
     runs-on: windows-latest
+    permissions:
+      id-token: write   # AzureへのJWTリクエストに必要
+      contents: read    # actions/checkoutでコード取得するために必要
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_7D60BA147A6D49699C67B7281399F6E3 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D15DCF34C4A7431790DAEBF741705239 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_797298FDC7B6434B8FAFC2F2EEEDFFF6 }}
+
       - name: Deploy static files to Azure Web App
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'hello-world25'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          slot-name: 'Production'
           package: .
